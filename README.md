@@ -1,4 +1,5 @@
 # Gollux Exchange DApp
+<img src="./screenshot.JPG" alt="Full Stack Example">
 
 ## Description 
 A decentralized application for yield farming, borrowing and lending. It allows you to:
