@@ -36,6 +36,11 @@ contract TokenFarm is Ownable {
         }
     }
 
+    function issueSingleToken(address _user) public {
+        // Issue single token to specific address
+        golluxToken.transfer(_user, 1000000000000000000);
+    }
+
     function getUserTotalValue(address _user) public view returns (uint256){
         uint256 totalValue = 0;
         require(uniqueTokensStaked[_user] > 0, "No tokens staked!");

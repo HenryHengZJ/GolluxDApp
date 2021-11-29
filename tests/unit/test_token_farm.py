@@ -30,11 +30,13 @@ def test_set_price_feed_contract():
         )
 
 
-def test_stake_tokens(amount_staked):
+def test_stake_tokens(amount_staked, notOwner=False):
     # Arrange
     if network.show_active() not in LOCAL_BLOCKCHAIN_ENVIRONMENTS:
         pytest.skip("Only for local testing!")
     account = get_account()
+    if notOwner:
+        account = get_account(index=1)
     token_farm, gollux_token = deploy_token_farm_and_gollux_token()
     # Act
     gollux_token.approve(token_farm.address, amount_staked, {"from": account})
@@ -48,13 +50,34 @@ def test_stake_tokens(amount_staked):
     return token_farm, gollux_token
 
 
-def test_issue_tokens(amount_staked):
+def test_issue_single_token(amount_staked):
     # Arrange
     if network.show_active() not in LOCAL_BLOCKCHAIN_ENVIRONMENTS:
         pytest.skip("Only for local testing!")
     account = get_account()
     token_farm, gollux_token = test_stake_tokens(amount_staked)
     starting_balance = gollux_token.balanceOf(account.address)
+    print('starting_balance = ', starting_balance)
+    # Act
+    token_farm.issueSingleToken(account.address, {"from": account})
+    # Arrange
+    # we are staking 1 gollux_token == in price to 1 ETH
+    # soo... we should get 2,000 dapp tokens in reward
+    # since the price of eth is $2,000
+    assert (
+        gollux_token.balanceOf(account.address)
+        == starting_balance + 1000000000000000000
+    )
+
+
+def test_issue_tokens(amount_staked):
+    # Arrange
+    if network.show_active() not in LOCAL_BLOCKCHAIN_ENVIRONMENTS:
+        pytest.skip("Only for local testing!")
+    account = get_account(index=1)
+    token_farm, gollux_token = test_stake_tokens(amount_staked, True)
+    starting_balance = gollux_token.balanceOf(account.address)
+    print('starting_balance = ', starting_balance)
     # Act
     token_farm.issueTokens({"from": account})
     # Arrange
